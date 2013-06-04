@@ -1,0 +1,554 @@
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+argglobal
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <F1> <Plug>iTexDoc
+inoremap <buffer> <Plug>iTexDoc :TexDoc 
+imap <buffer> <silent> <F6>f :ShowErrors f
+imap <buffer> <silent> <F6>r :ShowErrors rc
+imap <buffer> <silent> <F6>w :ShowErrors w
+imap <buffer> <silent> <F6> :ShowErrors e
+imap <buffer> <silent> <F6>l <Plug>OpenLog
+imap <buffer> <silent> <F6>d <Plug>Delete
+imap <buffer> <silent> <S-F5> <Plug>ToggleAuTeX
+imap <buffer> <silent> <S-F3> <Plug>ATP_ViewLocalOutput_sync
+imap <buffer> <silent> <F3> <Plug>ATP_ViewOutput_sync
+imap <buffer> <silent> <F4> <Plug>ChangeEnv
+cmap <buffer> <expr> <Nul> ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : '\_s\+') : ' ' )
+inoremap <buffer> <silent> <Plug>ToggleTab :call ATP_ToggleTab()
+inoremap <buffer> <silent> <Plug>ToggleIMaps :call ATP_ToggleIMaps(0, "!")
+nmap <buffer> <NL> <Plug>TexJMotionForward
+nmap <buffer>  <Plug>TexJMotionBackward
+nmap <buffer> <silent>  :call atplib#motion#StartVisualMode('cv')
+omap <buffer> <silent> <expr> % ( matchstr(getline("."), '^.*\%'.(col(".")+1).'c\\\=\w*\ze') =~ '\\\(begin\|end\)$' ? ":normal V%" : ":normal v%" )
+xmap <buffer> <silent> % <Plug>LatexBox_JumpToMatch
+nmap <buffer> <silent> % <Plug>LatexBox_JumpToMatch
+nmap <buffer> <silent> '	 <Plug>ToggleIMaps
+vmap <buffer> <silent> -c <Plug>CommentLines
+nmap <buffer> <silent> -p :keepjumps exe v:count1."Part"
+nmap <buffer> <silent> -c <Plug>CommentLines
+nmap <buffer> <silent> -s :keepjumps exe v:count1."Sec"
+nmap <buffer> <silent> -S :keepjumps exe v:count1."SSec"
+omap <buffer> <silent> =c :normal =c
+nmap <buffer> <silent> =c v<Plug>vSelectComment
+nmap <buffer> <silent> =d <Plug>Dictionary
+cmap <buffer> <expr> ã '^'.(getcmdline() =~ '\\v' ? '' : '\').'([^'.(getcmdline() =~ '\\v' ? '\' : '').'%]'.(getcmdline() =~ '\\v' ? '' : '\').'|\\'.(getcmdline() =~ '\\v' ? '\' : '').'%'.(getcmdline() =~ '\\v' ? '' : '\').')*\zs'
+vmap <buffer> <silent> M :Wrap \[ \]
+nmap <buffer> <silent> V :call atplib#motion#StartVisualMode('V')
+vmap <buffer> <silent> [] <Plug>vEndPrevEnvironment
+nmap <buffer> <silent> [] <Plug>EndPrevEnvironment
+vmap <buffer> <silent> [[ <Plug>vBegPrevEnvironment
+nmap <buffer> <silent> [[ <Plug>GotoPreviousEnvironment
+vmap <buffer> <silent> [p <Plug>vGotoPreviousPart
+nmap <buffer> <silent> [p <Plug>GotoPreviousPart
+nmap <buffer> <silent> [M <Plug>GotoPreviousDisplayedMath
+nmap <buffer> <silent> [m <Plug>GotoPreviousMath
+nmap <buffer> <silent> [e <Plug>JumptoPreviousEnvironment
+vmap <buffer> <silent> [c <Plug>vGotoPreviousChapter
+nmap <buffer> <silent> [c <Plug>GotoPreviousChapter
+vmap <buffer> <silent> [s <Plug>vGotoPreviousSection
+nmap <buffer> <silent> [s <Plug>GotoPreviousSection
+vmap <buffer> <silent> [S <Plug>vGotoPreviousSubSection
+nmap <buffer> <silent> [S <Plug>GotoPreviousSubSection
+nmap <buffer> <silent> [gf :PInput
+nmap <buffer> <silent> [i :PInput
+vmap <buffer> <silent> [% <Plug>SkipCommentBackward
+vmap <buffer> <silent> [* <Plug>SkipCommentBackward
+omap <buffer> <silent> [% :SkipCommentBackward
+omap <buffer> <silent> [* :SkipCommentBackward
+nmap <buffer> <silent> [% :SkipCommentBackward
+nmap <buffer> <silent> [* :SkipCommentBackward
+nmap <buffer> <silent> \e :ShowErrors
+nmap <buffer> <silent> \b <Plug>BibtexDefault
+nmap <buffer> <silent> \B <Plug>SimpleBibtex
+nmap <buffer> <silent> \D <Plug>ATP_TeXDebug
+nmap <buffer> <silent> \d <Plug>ATP_TeXdebug
+nmap <buffer> <silent> \\l <Plug>ATP_TeXLocal
+nmap <buffer> <silent> \l <Plug>ATP_TeXCurrent
+nmap <buffer> <silent> \L <Plug>ATP_Labels
+nmap <buffer> <silent> \t <Plug>ATP_TOC
+nmap <buffer> <silent> \g <Plug>Getpid
+nmap <buffer> <silent> \V <Plug>ATP_ViewLocalOutput_nosync
+nmap <buffer> <silent> \v <Plug>ATP_ViewOutput_nosync
+nmap <buffer> <silent> \\D <Plug>ToggleDebugMode
+nmap <buffer> <silent> \\d <Plug>ToggledebugMode
+nmap <buffer> <silent> \\s <Plug>TogglesilentMode
+nmap <buffer> <silent> \s <Plug>ToggleStar
+nmap <buffer> <silent> \a <Plug>TexAlign
+nmap <buffer> \b\{ :set opfunc=ATP_WrapBigKet_3_beging@
+vnoremap <buffer> <silent> \b\{ :Wrap \left\{ \right\} begin
+nmap <buffer> \b[ :set opfunc=ATP_WrapBigKet_2_beging@
+vnoremap <buffer> <silent> \b[ :Wrap \left[ \right] begin
+nmap <buffer> \b( :set opfunc=ATP_WrapBigKet_1_beging@
+vnoremap <buffer> <silent> \b( :Wrap \left( \right) begin
+nmap <buffer> \b\} :set opfunc=ATP_WrapBigKet_3_endg@
+vnoremap <buffer> <silent> \b\} :Wrap \left\{ \right\} end
+nmap <buffer> \b] :set opfunc=ATP_WrapBigKet_2_endg@
+vnoremap <buffer> <silent> \b] :Wrap \left[ \right] end
+nmap <buffer> \b) :set opfunc=ATP_WrapBigKet_1_endg@
+vnoremap <buffer> <silent> \b) :Wrap \left( \right) end
+nmap <buffer> \> :set opfunc=ATP_WrapKet_5_endg@
+vnoremap <buffer> <silent> \> :Wrap < > end
+nmap <buffer> \< :set opfunc=ATP_WrapKet_5_beging@
+vnoremap <buffer> <silent> \< :Wrap < > begin
+nmap <buffer> \} :set opfunc=ATP_WrapKet_4_endg@
+vnoremap <buffer> <silent> \} :Wrap { } end
+nmap <buffer> \{ :set opfunc=ATP_WrapKet_4_beging@
+nmap <buffer> \\} :set opfunc=ATP_WrapKet_3_endg@
+vnoremap <buffer> <silent> \\} :Wrap \{ \} end
+nmap <buffer> \\{ :set opfunc=ATP_WrapKet_3_beging@
+vnoremap <buffer> <silent> \\{ :Wrap \{ \} begin
+nmap <buffer> \] :set opfunc=ATP_WrapKet_2_endg@
+vnoremap <buffer> <silent> \] :Wrap [ ] end
+nmap <buffer> \[ :set opfunc=ATP_WrapKet_2_beging@
+vnoremap <buffer> <silent> \[ :Wrap [ ] begin
+nmap <buffer> \) :set opfunc=ATP_WrapKet_1_endg@
+vnoremap <buffer> <silent> \) :Wrap ( ) end
+nmap <buffer> \( :set opfunc=ATP_WrapKet_1_beging@
+vnoremap <buffer> <silent> \( :Wrap ( ) begin
+nmap <buffer> \M :set opfunc=ATP_WrapWMathg@
+nmap <buffer> \m :set opfunc=ATP_WrapVMathg@
+vnoremap <buffer> <silent> \A :Wrap \begin{align=b:atp_StarMathEnvDefault} \end{align=b:atp_StarMathEnvDefault} 0 1
+vnoremap <buffer> <silent> \E :Wrap \begin{equation=b:atp_StarMathEnvDefault} \end{equation=b:atp_StarMathEnvDefault} 0 1
+vnoremap <buffer> <silent> \L :Wrap \begin{flushleft} \end{flushleft} 0 1
+vnoremap <buffer> <silent> \R :Wrap \begin{flushright} \end{flushright} 0 1
+vnoremap <buffer> <silent> \C :Wrap \begin{center} \end{center} 0 1
+vnoremap <buffer> <silent> \{ :Wrap { } begin
+nmap <buffer> <silent> \F <Plug>SyncTexLKeyStroke
+nmap <buffer> <silent> \\f <Plug>SyncTexLKeyStroke
+nmap <buffer> <silent> \f <Plug>SyncTexKeyStroke
+nmap <buffer> <silent> \u <Plug>Unwrap
+vmap <buffer> <silent> ][ <Plug>vEndNextEnvironment
+nmap <buffer> <silent> ][ <Plug>EndNextEnvironment
+vmap <buffer> <silent> ]] <Plug>vBegNextEnvironment
+nmap <buffer> <silent> ]] <Plug>GotoNextEnvironment
+vmap <buffer> <silent> ]p <Plug>vGotoNextPart
+nmap <buffer> <silent> ]p <Plug>GotoNextPart
+nmap <buffer> <silent> ]M <Plug>GotoNextDisplayedMath
+nmap <buffer> <silent> ]m <Plug>GotoNextMath
+nmap <buffer> <silent> ]e <Plug>JumptoNextEnvironment
+vmap <buffer> <silent> ]c <Plug>vGotoNextChapter
+nmap <buffer> <silent> ]c <Plug>GotoNextChapter
+vmap <buffer> <silent> ]s <Plug>vGotoNextSection
+nmap <buffer> <silent> ]s <Plug>GotoNextSection
+vmap <buffer> <silent> ]S <Plug>vGotoNextSubSection
+nmap <buffer> <silent> ]S <Plug>GotoNextSubSection
+nmap <buffer> <silent> ]gf :NInput
+nmap <buffer> <silent> ]i :NInput
+vmap <buffer> <silent> ]% <Plug>SkipCommentForward
+vmap <buffer> <silent> ]* <Plug>SkipCommentForward
+omap <buffer> <silent> ]% :SkipCommentForward
+omap <buffer> <silent> ]* :SkipCommentForward
+nmap <buffer> <silent> ]% :SkipCommentForward
+nmap <buffer> <silent> ]* :SkipCommentForward
+vnoremap <buffer> <silent> _w ::call atplib#various#RedoLastWrapSelection(["'<", "'>"])
+vnoremap <buffer> <silent> _cal :IWrap [''],['\mathcal{']
+vnoremap <buffer> <silent> _no :IWrap ['\textnormal{'],['\mathnormal{']
+vnoremap <buffer> <silent> _ov :Wrap \overline{
+vnoremap <buffer> <silent> _un :Wrap \underline{
+vnoremap <buffer> <silent> _md :Wrap \textmd{
+vnoremap <buffer> <silent> _up :Wrap \textup{
+vnoremap <buffer> <silent> _sc :Wrap \textsc{
+vnoremap <buffer> <silent> _sl :Wrap \textsl{
+vnoremap <buffer> <silent> _bb :IWrap ['\textbf{'],['\mathbb{']
+vnoremap <buffer> <silent> _bf :IWrap ['\textbf{'],['\mathbf{']
+vnoremap <buffer> <silent> _tt :IWrap ['\texttt{'],['\mathtt{']
+vnoremap <buffer> <silent> _sf :IWrap ['\textsf{'],['\mathsf{']
+vnoremap <buffer> <silent> _it :IWrap ['\textit{'],['\mathit{']
+vnoremap <buffer> <silent> _em :IWrap ['\emph{'],['\mathit{']
+vnoremap <buffer> <silent> _rm :IWrap ['\textrm{'],['\mathrm{']
+vnoremap <buffer> <silent> _te :IWrap ['\textrm{'],['\text{']
+vnoremap <buffer> <silent> _mb :Wrap \mbox{ } begin
+vnoremap <buffer> <silent> _f :Wrap {\usefont{OT1}{}{}{}\selectfont\  } 14
+nmap <buffer> _cal :set opfunc=ATP_WrapCalg@
+nmap <buffer> _ov :set opfunc=ATP_WrapOverlineg@
+nmap <buffer> _un :set opfunc=ATP_WrapUnderlineg@
+nmap <buffer> _md :set opfunc=ATP_WrapMDg@
+nmap <buffer> _up :set opfunc=ATP_WrapUPg@
+nmap <buffer> _sc :set opfunc=ATP_WrapSCg@
+nmap <buffer> _sl :set opfunc=ATP_WrapSLg@
+nmap <buffer> _tt :set opfunc=ATP_WrapTTg@
+nmap <buffer> _sf :set opfunc=ATP_WrapSFg@
+nmap <buffer> _em :set opfunc=ATP_WrapEmphg@
+nmap <buffer> _it :set opfunc=ATP_WrapItalicg@
+nmap <buffer> _bb :set opfunc=ATP_WrapBBg@
+nmap <buffer> _bf :set opfunc=ATP_WrapBoldg@
+nmap <buffer> _w :set opfunc=ATP_LastWrapg@
+vnoremap <buffer> <silent> `t :Wrap \t{ } end
+vnoremap <buffer> <silent> `c :Wrap \c{ } end
+vnoremap <buffer> <silent> `. :IWrap ['\.{'],['\dot{']
+vnoremap <buffer> <silent> <expr> `~ ':Wrap \'.(g:atp_imap_wide ? "wide" : "").'tilde{ } end'
+vnoremap <buffer> <silent> `H :Wrap \H{ } end
+vnoremap <buffer> <silent> `d :Wrap \d{ } end
+vnoremap <buffer> <silent> `b :Wrap \b{ } end
+vnoremap <buffer> <silent> `` :IWrap ['\`{'],['\grave{']
+vnoremap <buffer> <silent> `v :IWrap ['\v{'],['\check{']
+vnoremap <buffer> <silent> `^ :Wrap \^{ } end
+vnoremap <buffer> <silent> `" :Wrap \"{ } end
+vnoremap <buffer> <silent> `' :IWrap ['\''{'],['\acute{']
+omap <buffer> a] :normal va]
+vmap <buffer> a] <Plug>LatexBox_SelectBracketOuter_3
+omap <buffer> a[ :normal va[
+vmap <buffer> a[ <Plug>LatexBox_SelectBracketOuter_3
+omap <buffer> <silent> a} :normal va}
+vmap <buffer> <silent> a} <Plug>LatexBox_SelectBracketOuter_2
+omap <buffer> <silent> a{ :normal va{
+vmap <buffer> <silent> a{ <Plug>LatexBox_SelectBracketOuter_2
+omap <buffer> <silent> a) :normal va)
+vmap <buffer> <silent> a) <Plug>LatexBox_SelectBracketOuter_1
+omap <buffer> <silent> a( :normal va(
+vmap <buffer> <silent> a( <Plug>LatexBox_SelectBracketOuter_1
+omap <buffer> <silent> am :normal vam
+vmap <buffer> <silent> am <Plug>LatexBox_SelectInlineMathOuter
+omap <buffer> <silent> ae :normal vae
+vmap <buffer> <silent> ae <Plug>LatexBox_SelectCurrentEnvOuter
+vmap <buffer> <silent> aS <Plug>SelectOuterSyntax
+omap <buffer> <silent> ap :normal vap
+vmap <buffer> <silent> ap <Plug>ATP_SelectCurrentParagraphOuter
+xmap <buffer> <silent> g% <Plug>LatexBox_BackJumpToMatch
+nmap <buffer> <silent> g% <Plug>LatexBox_BackJumpToMatch
+nnoremap <buffer> g< :call feedkeys("m`vip".(v:count1 <= 1 ? "" : v:count1)."<``", 't')
+nnoremap <buffer> g> :call feedkeys("m`vip".(v:count1 <= 1 ? "" : v:count1).">``", 't')
+nmap <buffer> <silent> gw <Plug>FormatLines
+nnoremap <buffer> <silent> gf :call atplib#motion#GotoFile("", "")
+vmap <buffer> <silent> gC <Plug>SkipCommentBackward
+omap <buffer> <silent> gC :SkipCommentBackward
+nmap <buffer> <silent> gC :SkipCommentBackward
+vmap <buffer> <silent> gc <Plug>SkipCommentForward
+omap <buffer> <silent> gc :SkipCommentForward
+nmap <buffer> <silent> gc :SkipCommentForward
+omap <buffer> i] :normal vi]
+vmap <buffer> i] <Plug>LatexBox_SelectBracketInner_3
+omap <buffer> i[ :normal vi[
+vmap <buffer> i[ <Plug>LatexBox_SelectBracketInner_3
+omap <buffer> <silent> i} :normal vi}
+vmap <buffer> <silent> i} <Plug>LatexBox_SelectBracketInner_2
+omap <buffer> <silent> i{ :normal vi{
+vmap <buffer> <silent> i{ <Plug>LatexBox_SelectBracketInner_2
+omap <buffer> <silent> i) :normal vi)
+vmap <buffer> <silent> i) <Plug>LatexBox_SelectBracketInner_1
+omap <buffer> <silent> i( :normal vi(
+vmap <buffer> <silent> i( <Plug>LatexBox_SelectBracketInner_1
+omap <buffer> <silent> im :normal vim
+vmap <buffer> <silent> im <Plug>LatexBox_SelectInlineMathInner
+omap <buffer> <silent> ie :normal vie
+vmap <buffer> <silent> iE <Plug>LatexBox_SelectCurrentEnVInner
+vmap <buffer> <silent> ie <Plug>LatexBox_SelectCurrentEnvInner
+vmap <buffer> <silent> iS <Plug>SelectInnerSyntax
+omap <buffer> <silent> ip :normal vip
+vmap <buffer> <silent> ip <Plug>ATP_SelectCurrentParagraphInner
+vmap <buffer> <silent> m :Wrap \( \)
+nmap <buffer> <silent> v :call atplib#motion#StartVisualMode('v')
+omap <buffer> <silent> { :exe "normal ".v:count1."{"
+vmap <buffer> <silent> { <Plug>ParagraphVisualMotionBackward
+nmap <buffer> <silent> { <Plug>ParagraphNormalMotionBackward
+omap <buffer> <silent> } :exe "normal ".v:count1."}"
+vmap <buffer> <silent> } <Plug>ParagraphVisualMotionForward
+nmap <buffer> <silent> } <Plug>ParagraphNormalMotionForward
+vmap <buffer> <silent> <Plug>ParagraphVisualMotionBackward :call atplib#motion#ParagraphVisualMotion('b',v:count1)
+vmap <buffer> <silent> <Plug>ParagraphVisualMotionForward :call atplib#motion#ParagraphVisualMotion('',v:count1)
+nmap <buffer> <Plug>ParagraphNormalMotionBackward :call atplib#motion#ParagraphNormalMotion('b', v:count1)
+nmap <buffer> <Plug>ParagraphNormalMotionForward :call atplib#motion#ParagraphNormalMotion('', v:count1)
+nmap <buffer> <F1> <Plug>TexDoc
+nmap <buffer> <silent> <F6>g <Plug>PdfFonts
+nmap <buffer> <silent> <F6>f :ShowErrors f
+nmap <buffer> <silent> <F6>r :ShowErrors rc
+nmap <buffer> <silent> <F6>w :ShowErrors w
+nmap <buffer> <silent> <F6> :ShowErrors e
+nmap <buffer> <silent> <F6>l <Plug>OpenLog
+nmap <buffer> <silent> <F6>d <Plug>Delete
+nmap <buffer> <silent> <S-F5> <Plug>ToggleAuTeX
+nmap <buffer> <silent> <F5> <Plug>ATP_TeXVerbose
+nmap <buffer> <silent> <S-F3> <Plug>ATP_ViewLocalOutput_sync
+nmap <buffer> <silent> <F3> <Plug>ATP_ViewOutput_sync
+nmap <buffer> <silent> <S-F4> <Plug>ToggleEnvForward
+nmap <buffer> <silent> <F4> <Plug>ChangeEnv
+vmap <buffer> <silent> <F4> <Plug>WrapEnvironment
+vnoremap <buffer> <silent> <Plug>vEndNextEnvironment m':exe "normal! gv"|call search('\\end\s*{\|\\\@<!\\\]\|\\\@<!\$\$', 'W')
+nnoremap <buffer> <silent> <Plug>EndNextEnvironment m':call search('\\end\s*{\|\\\@<!\\\]\|\\\@<!\$\$', 'W')
+vnoremap <buffer> <silent> <Plug>vEndPrevEnvironment m':exe "normal! gv"|call search('\\end\s*{\|\\\@<!\\\]\|\\\@<!\$\$', 'bW')
+nnoremap <buffer> <silent> <Plug>EndPrevEnvironment m':call search('\\end\s*{\|\\\@<!\\\]\|\\\@<!\$\$', 'bW')
+vnoremap <buffer> <silent> <Plug>vBegNextEnvironment m':exe "normal! gv"|call search('\\begin\s*{\|\\\@<!\\\[\|\\\@<!\$\$', 'W')
+nnoremap <buffer> <silent> <Plug>BegNextEnvironment m':call search('\\begin\s*{\|\\\@<!\\\[\|\\\@<!\$\$', 'W')
+vnoremap <buffer> <silent> <Plug>vBegPrevEnvironment m':exe "normal! gv"|call search('\\begin\s*{\|\\\@<!\\\[\|\\\@<!\$\$', 'bW')
+nnoremap <buffer> <silent> <Plug>BegPrevEnvironment m':call search('\\begin\s*{\|\\\@<!\\\[\|\\\@<!\$\$', 'bW')
+nmap <buffer> <S-LeftMouse> <LeftMouse><Plug>SyncTexMouse
+nmap <buffer> <F2> :echo ATP_ToggleSpace()
+nnoremap <buffer> <silent> <SNR>58_InputRestore :call inputrestore()
+nmap <buffer> <silent> <Plug>FormatLines :call atplib#various#FormatLines()
+nnoremap <buffer> <silent> <Plug>Lpstat :call atplib#various#Lpstat()
+nnoremap <buffer> <Plug>SshPrint :SshPrint 
+nnoremap <buffer> <silent> <Plug>PdfFonts :call atplib#various#PdfFonts()
+nnoremap <buffer> <silent> <Plug>TexLog :call atplib#various#TexLog()
+nnoremap <buffer> <silent> <Plug>OpenLog :call atplib#various#OpenLog()
+nmap <buffer> <silent> <Plug>Delete :call atplib#various#Delete("")
+nnoremap <buffer> <Plug>TexDoc :TexDoc 
+nnoremap <buffer> <silent> <Plug>ChangeEnv :call atplib#various#ToggleEnvironment(1)
+nnoremap <buffer> <silent> <Plug>ToggleEnvBackward :call atplib#various#ToggleEnvironment(0, -1)
+nnoremap <buffer> <silent> <Plug>ToggleEnvForward :call atplib#various#ToggleEnvironment(0, 1)
+nnoremap <buffer> <silent> <Plug>ToggleStar :call atplib#various#ToggleStar()
+vmap <buffer> <Plug>InteligentWrapSelection :call atplib#various#InteligentWrapSelection('')i
+vmap <buffer> <silent> <Plug>WrapEnvironment :call atplib#various#WrapEnvironment('', 1)
+vmap <buffer> <Plug>WrapSelection :call atplib#various#WrapSelection('')i
+map <buffer> <Plug>UnCommentLines :call atplib#various#Comment(0)
+map <buffer> <Plug>CommentLines :call atplib#various#Comment(1)
+nmap <buffer> <silent> <Plug>Dictionary :call atplib#various#Dictionary(expand("<cword>"))
+nmap <buffer> <silent> <Plug>Unwrap :call atplib#various#Unwrap()
+nnoremap <buffer> <silent> <Plug>RecursiveSearchN :exe "S /".@/."/x".(v:searchforward ? "b" : "")
+nnoremap <buffer> <silent> <Plug>RecursiveSearchn :exe "S /".@/."/x".(v:searchforward ? "" : "b")
+nnoremap <buffer> <silent> <Plug>GotoPreviousDisplayedMath :call atplib#motion#GotoEnvironment('bsW',v:count1,'displayedmath')
+nnoremap <buffer> <silent> <Plug>GotoNextDisplayedMath :call atplib#motion#GotoEnvironment('sW',v:count1,'displayedmath')
+nnoremap <buffer> <silent> <Plug>GotoPreviousInlineMath :call atplib#motion#GotoEnvironment('bsW',v:count1,'inlinemath')
+nnoremap <buffer> <silent> <Plug>GotoNextInlineMath :call atplib#motion#GotoEnvironment('sW',v:count1,'inlinemath')
+nnoremap <buffer> <silent> <Plug>GotoPreviousMath :call atplib#motion#GotoEnvironment('bsW',v:count1,'math')
+nnoremap <buffer> <silent> <Plug>GotoNextMath :call atplib#motion#GotoEnvironment('sW',v:count1,'math')
+nnoremap <buffer> <silent> <Plug>GotoPreviousEnvironment :call atplib#motion#GotoEnvironment('bsW',v:count1,'')
+nnoremap <buffer> <silent> <Plug>GotoNextEnvironment :call atplib#motion#GotoEnvironment('sW',v:count1,'')
+vmap <buffer> <Plug>SkipCommentBackward :call atplib#motion#SkipComment('bs', 'v', v:count1)
+vmap <buffer> <Plug>SkipCommentForward :call atplib#motion#SkipComment('fs', 'v', v:count1)
+map <buffer> <silent> <Plug>JumptoNextEnvironment :call atplib#motion#JumptoEnvironment(0)
+map <buffer> <silent> <Plug>JumptoPreviousEnvironment :call atplib#motion#JumptoEnvironment(1)
+nmap <buffer> <silent> <Plug>SelectFrameEnvironment :call SelectEnvironment('frame')
+vmap <buffer> <silent> <Plug>vSelectComment :call SelectComment()
+nmap <buffer> <Plug>ATP_MakeLatex :MakeLatex
+nmap <buffer> <Plug>SyncTexLMouse :call atplib#compiler#SyncTex("", 1, expand("%:t"), b:atp_LocalXpdfServer)
+nmap <buffer> <Plug>SyncTexLKeyStroke :call atplib#compiler#SyncTex("", 0, expand("%:t"), b:atp_LocalXpdfServer)
+nmap <buffer> <Plug>SyncTexMouse :call atplib#compiler#SyncTex("", 1, b:atp_MainFile, b:atp_XpdfServer)
+nmap <buffer> <Plug>SyncTexKeyStroke :call atplib#compiler#SyncTex("", 0, b:atp_MainFile, b:atp_XpdfServer)
+nnoremap <buffer> <silent> <Plug>ToggleTab :call ATP_ToggleTab()
+nnoremap <buffer> <silent> <Plug>ToggleDebugMode :call ATP_ToggleDebugMode("Debug")
+nnoremap <buffer> <silent> <Plug>ToggledebugMode :call ATP_ToggleDebugMode("debug")
+nnoremap <buffer> <silent> <Plug>TogglesilentMode :call ATP_ToggleDebugMode("silent")
+nnoremap <buffer> <silent> <Plug>ToggleCallBack :call ATP_ToggleCallBack()
+nnoremap <buffer> <silent> <Plug>ToggleCheckMathOpened :call ATP_ToggleCheckMathOpened()
+nnoremap <buffer> <silent> <Plug>ToggleSpaceOff :echo ATP_ToggleSpace('off')
+nnoremap <buffer> <silent> <Plug>ToggleSpaceOn :echo ATP_ToggleSpace('on')
+nnoremap <buffer> <silent> <Plug>ToggleSpace :echo ATP_ToggleSpace()
+nnoremap <buffer> <silent> <Plug>ToggleAuTeX :call ATP_ToggleAuTeX()
+nnoremap <buffer> <silent> <Plug>ToggleIMaps :call ATP_ToggleIMaps(0, "!")
+imap <buffer> <NL> <Plug>TexJMotionForward
+imap <buffer>  <Plug>TexJMotionBackward
+inoremap <buffer> <silent> o =atplib#complete#TabCompletion(0)
+inoremap <buffer> <silent>  =atplib#complete#TabCompletion(1)
+cmap <buffer> <expr>  ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : '\_s\+') : ' ' )
+cmap <buffer> <expr>   ( g:atp_cmap_space && getcmdtype() =~ '[/?]' ? (getcmdline() =~ '\%([^\\]\|^\)\\v' ? '\_s+' : '\_s\+') : ' ' )
+inoremap <buffer> <silent> ##uf \usefont{OT1}{}{}{}<Left><Left><Left><Left><Left>
+inoremap <buffer> <silent> <expr> ##fr (atplib#IsInMath() ? "\\mathfrak{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."\\mathfrak{}<Left>" )
+inoremap <buffer> <silent> <expr> ##cr (atplib#IsInMath() ? "\\mathscr{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."\\mathscr{}<Left>" )
+inoremap <buffer> <silent> <expr> ##cal (atplib#IsInMath() ? "\\mathcal{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."\\mathcal{}<Left>" )
+inoremap <buffer> <silent> <expr> ##bb (atplib#IsInMath() ? "\\mathbb{}<Left>" : ( &filetype == "plaintex" ? "$" : (&l:cpoptions =~# "B" ? "\\" : "\\\\")."(" )."\\mathbb{}<Left>" )
+inoremap <buffer> <silent> ##em \emph{}<Left>
+inoremap <buffer> <silent> ##te \text{}<Left>
+inoremap <buffer> <silent> ##sc \textsc{}<Left>
+inoremap <buffer> <silent> ##sl \textsl{}<Left>
+inoremap <buffer> <silent> ##md \textmd{}<Left>
+inoremap <buffer> <silent> ##up \textup{}<Left>
+inoremap <buffer> <silent> <expr> ##normal (atplib#IsInMath() ? "\\mathnormal{}<Left>" : "\\textnormal{}<Left>" )
+inoremap <buffer> <silent> <expr> ##tt (atplib#IsInMath() ? "\\mathtt{}<Left>" : "\\texttt{}<Left>" )
+inoremap <buffer> <silent> <expr> ##bf (atplib#IsInMath() ? "\\mathbf{}<Left>" : "\\textbf{}<Left>" )
+inoremap <buffer> <silent> <expr> ##sf (atplib#IsInMath() ? "\\mathsf{}<Left>" : "\\textsf{}<Left>" )
+inoremap <buffer> <silent> <expr> ##it (atplib#IsInMath() ? "\\mathit{}<Left>" : "\\textit{}<Left>" )
+inoremap <buffer> <silent> <expr> ##rm (atplib#IsInMath() ? "\\mathrm{}<Left>" : "\\textrm{}<Left>" )
+imap <buffer> <silent> '	 <Plug>ToggleIMaps
+inoremap <buffer> <silent> ]q \begin{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)}\end{equation=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)}O
+inoremap <buffer> <silent> ]a \begin{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)}\end{align=(getline(".")[col(".")-2]=="*"?"":b:atp_StarMathEnvDefault)}O
+inoremap <buffer> <silent> ]c \begin{=g:atp_EnvNameCorollary=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameCorollary=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]x \begin{=g:atp_EnvNameExample=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameExample=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]n \begin{=g:atp_EnvNameNote=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameNote=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]r \begin{=g:atp_EnvNameRemark=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameRemark=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]l \begin{=g:atp_EnvNameLemma=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameLemma=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]P \begin{=g:atp_EnvNameProposition=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameProposition=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]d \begin{=g:atp_EnvNameDefinition=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameDefinition=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]t \begin{=g:atp_EnvNameTheorem=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}\end{=g:atp_EnvNameTheorem=(getline(".")[col(".")-2]=="*"?"":b:atp_StarEnvDefault)}O
+inoremap <buffer> <silent> ]I \begin{itemize}\end{itemize}O\item
+inoremap <buffer> <silent> ]T \begin{center}\begin{tikzpicture}\end{tikzpicture}\end{center}<Up>O
+inoremap <buffer> <silent> ]E \begin{enumerate}\end{enumerate}O\item
+inoremap <buffer> <silent> ]f \begin{frame}\end{frame}O
+inoremap <buffer> <silent> ]i :call InsertItem()a
+inoremap <buffer> <silent> ]A \begin{abstract}\end{abstract}O
+inoremap <buffer> <silent> ]B \begin{thebibliography}\end{thebibliography}O
+inoremap <buffer> <silent> ]R \begin{flushright}\end{flushright}O
+inoremap <buffer> <silent> ]L \begin{flushleft}\end{flushleft}O
+inoremap <buffer> <silent> ]C \begin{center}\end{center}O
+inoremap <buffer> <silent> ]p \begin{proof}\end{proof}O
+inoremap <buffer> <silent> ]e \end{}<Left>
+inoremap <buffer> <silent> ]b \begin{}<Left>
+inoremap <buffer> <silent> ]M \[\]<Left><Left>
+inoremap <buffer> <silent> ]m \(\)<Left><Left>
+inoremap <buffer> <silent> ]] ]
+inoremap <buffer> <silent> <expr> `. (index(split(g:atp_diacritics_letters['.'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ?"vx".(col(".")<=len(getline("."))? "i" : "a" )."\\.{\"}" : "`." )
+inoremap <buffer> <silent> <expr> `~ (index(split(g:atp_diacritics_letters['~'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ?"vx".(col(".")<=len(getline("."))? "i" : "a" )."\\~{\"}" : "`~" )
+inoremap <buffer> <silent> <expr> `` (index(split(g:atp_diacritics_letters['`'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\`{\"}" : "``" )
+inoremap <buffer> <silent> <expr> `v (index(split(g:atp_diacritics_letters['v'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\v{\"}" : "`v" )
+inoremap <buffer> <silent> <expr> `^ (index(split(g:atp_diacritics_letters['^'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\^{\"}" : "`^")
+inoremap <buffer> <silent> <expr> `' (index(split(g:atp_diacritics_letters["'"], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1  ? "vx".(col(".")<=len(getline(line(".")))? "i" : "a" )."\\'{\"}" : "`'")
+inoremap <buffer> <silent> <expr> `t (index(split(g:atp_diacritics_letters['t'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\t{\"}" : "`t" )
+inoremap <buffer> <silent> <expr> `c (index(split(g:atp_diacritics_letters['c'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ?"vx".(col(".")<=len(getline("."))? "i" : "a" )."\\c{\"}" : "`c" )
+inoremap <buffer> <silent> <expr> `H (index(split(g:atp_diacritics_letters['H'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\H{\"}" : "`H" )
+inoremap <buffer> <silent> <expr> `d (index(split(g:atp_diacritics_letters['d'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\d{\"}" : "`d" )
+inoremap <buffer> <silent> <expr> `b (index(split(g:atp_diacritics_letters['b'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\b{\"}" : "`b" )
+inoremap <buffer> <silent> <expr> `2 (index(split(g:atp_diacritics_letters['2'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1 ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\2{\"}" : "`2")
+inoremap <buffer> <silent> <expr> `" (index(split(g:atp_diacritics_letters['"'], '\zs'), tolower(getline(line("."))[col(".")-2])) != -1  ? "vx".(col(".")<=len(getline("."))? "i" : "a" )."\\\"{\"}" : "`\"")
+iabbr <buffer> =example= \begin{example}\end{example}O
+iabbr <buffer> =remark= \begin{remark}\end{remark}O
+iabbr <buffer> =proof= \begin{proof}\end{proof}O
+iabbr <buffer> =definition= \begin{definition}\end{definition}O
+iabbr <buffer> =lemma= \begin{lemma}\end{lemma}O
+iabbr <buffer> =proposition= \begin{proposition}\end{proposition}O
+iabbr <buffer> =theorem= \begin{theorem}\end{theorem}O
+iabbr <buffer> =corollary= \begin{corollary}\end{corollary}O
+iabbr <buffer> =flalign*= \begin{flalign*}\end{flalign*}O
+iabbr <buffer> =flalign= \begin{flalign}\end{flalign}O
+iabbr <buffer> =split= \begin{split}\end{split}O
+iabbr <buffer> =multline*= \begin{multline*}\end{multline*}O
+iabbr <buffer> =multline= \begin{multline}\end{multline}O
+iabbr <buffer> =gather*= \begin{gather*}\end{gather*}O
+iabbr <buffer> =gather= \begin{gather}\end{gather}O
+iabbr <buffer> =alignat*= \begin{alignat*}\end{alignat*}O
+iabbr <buffer> =alignat= \begin{alignat}\end{alignat}O
+iabbr <buffer> =align*= \begin{align*}\end{align*}O
+iabbr <buffer> =align= \begin{align}\end{align}O
+iabbr <buffer> =equation*= \begin{equation*}\end{equation*}O
+iabbr <buffer> =equation= \begin{equation}\end{equation}O
+iabbr <buffer> =tabular= \begin{tabular}\end{tabular}<Up>A
+iabbr <buffer> =table= \begin{table}\end{table}O
+iabbr <buffer> =array= \begin{array}\end{array}O
+iabbr <buffer> =figure= \begin{figure}\end{figure}O
+iabbr <buffer> =verbatim= \begin{verbatim}\end{verbatim}O
+iabbr <buffer> =abstract= \begin{abstract}\end{abstract}O
+iabbr <buffer> =verse= \begin{verse}\end{verse}O
+iabbr <buffer> =quotation= \begin{quotation}\end{quotation}O
+iabbr <buffer> =quote= \begin{quote}\end{quote}O
+iabbr <buffer> =enumerate= \begin{enumerate}\end{enumerate}O
+iabbr <buffer> =itemize= \begin{itemize}\end{itemize}O
+iabbr <buffer> =frame= \begin{frame}\end{frame}O
+iabbr <buffer> =tikzpicture= \begin{tikzpicture}\end{tikzpicture}O
+iabbr <buffer> =flushleft= \begin{flushleft}\end{flushleft}O
+iabbr <buffer> =flushright= \begin{flushright}\end{flushright}O
+iabbr <buffer> =center= \begin{center}\end{center}O
+iabbr <buffer> =thebibliography= \begin{thebibliography}\end{thebibliography}<Up>A
+iabbr <buffer> =bibliography= \begin{thebibliography}\end{thebibliography}<Up>A
+iabbr <buffer> =titlepage= \begin{titlepage}\end{titlepage}O
+iabbr <buffer> =minipage= \begin{minipage}\end{minipage}<Up>A
+iabbr <buffer> =list= \begin{list}\end{list}O
+iabbr <buffer> =picture= \begin{picture}()()\end{picture}<Up>f(a
+iabbr <buffer> =letter= \begin{letter}\end{letter}O
+iabbr <buffer> =description= egin{description}nd{description}O
+iabbr <buffer> =document= egin{document}nd{document}O
+iabbr <buffer> ++ \ddagger
+iabbr <buffer> +| \dagger
+iabbr <buffer> -+ \mp
+iabbr <buffer> +- \pm
+let &cpo=s:cpo_save
+unlet s:cpo_save
+setlocal keymap=
+setlocal noarabic
+setlocal autoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
+setlocal commentstring=%%s
+setlocal complete=.,w,b,u,t,i,k/Users/pepa/.vim/bundle/AutomaticTexPlugin_12.1/ftplugin/ATP_files/dictionaries/greek,k/Users/pepa/.vim/bundle/AutomaticTexPlugin_12.1/ftplugin/ATP_files/dictionaries/dictionary,k/Users/pepa/.vim/bundle/AutomaticTexPlugin_12.1/ftplugin/ATP_files/dictionaries/SIunits,k/Users/pepa/.vim/bundle/AutomaticTexPlugin_12.1/ftplugin/ATP_files/dictionaries/tikz
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=\\\\\\([egx]\\|char\\|mathchar\\|count\\|dimen\\|muskip\\|skip\\|toks\\)\\=def\\|\\\\font\\|\\\\\\(future\\)\\=let\\|\\\\new\\(count\\|dimen\\|skip\\|muskip\\|box\\|toks\\|read\\|write\\|fam\\|insert\\)\\|\\\\definecolor{\\|\\\\\\(re\\)\\=new\\(boolean\\|command\\|counter\\|environment\\|font\\|if\\|length\\|savebox\\|theorem\\(style\\)\\=\\)\\s*\\*\\=\\s*{\\=\\|DeclareMathOperator\\s*{\\=\\s*\\|DeclareFixedFont\\s*{\\s*
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=LaTeX\\\ %trror::%f::%l::%c::%m,Citation\ %tarning::%f::%l::%c::%m,Reference\ LaTeX\ %tarning::%f::%l::%c::%m
+setlocal expandtab
+if &filetype != 'tex'
+setlocal filetype=tex
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=^[^%]*\\%(\\\\input\\(\\s*{\\)\\=\\|\\\\include\\s*{\\)
+setlocal includeexpr=substitute(v:fname,'\\%(.tex\\)\\?$','.tex','')
+setlocal indentexpr=LatexBox_TexIndent()
+setlocal indentkeys==end,=item,),],},o,O,0\\,!^F
+setlocal noinfercase
+setlocal iskeyword=@,48-57,192-255,:
+setlocal keywordprg=texdoc\ -m
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal nomacmeta
+setlocal makeprg=python\ ~/.vim/bundle/AutomaticTexPlugin_12.1/ftplugin/ATP_files/makelatex.py\ --texfile\ '/Users/pepa/Disk\ Google/Prace/Projekt\ KIE/pruvodni\ dopis.tex'\ --bufnr\ 1\ --start\ 0\ --output-format\ pdf\ --verbose\ silent\ --cmd\ pdflatex\ --bibcmd\ bibtex\ --bibliographies\ ''\ --outdir\ '/Users/pepa/Disk\ Google/Prace/Projekt\ KIE'\ --keep\ 'log,aux,toc,bbl,ind,idx,synctex.gz,blg,loa,toc,lot,lof,thm,out,nav'\ --tex-options\ '-synctex=1,-interaction=nonstopmode'\ --servername\ VIM\ --viewer\ 'open'\ --xpdf-server\ 'pruvodni\ dopis'\ --viewer-options\ ''\ --progname\ Vim\ --tempdir\ '/var/folders/C4/C4RJDGOLH6W4f9PUAWbbSE+++TI/-Tmp-/atp_nPGdjK'\ --logdir\ '/var/folders/C4/C4RJDGOLH6W4f9PUAWbbSE+++TI/-Tmp-/atp_nPGdjK'\ --env\ 'max_print_line=2000'\ --reload-on-error\ \ &
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=alpha
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=.,/usr/include,,,~/Library/texmf/tex,
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=2
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=2
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=.tex
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'tex'
+setlocal syntax=tex
+endif
+setlocal tabstop=2
+setlocal tags=
+setlocal textwidth=80
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 39 - ((35 * winheight(0) + 20) / 41)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+39
+normal! 0
+lcd ~/Disk\ Google/Prace/Projekt\ KIE
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+" vim: set ft=vim :

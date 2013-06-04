@@ -1,0 +1,8 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_1='/Users/pepa/Dropbox'
+let g:netrw_dirhist_2='/Users/pepa/Dropbox/2_RESEARCH'
+let g:netrw_dirhist_3='/Users/pepa/Dropbox/2_RESEARCH/DPS'
+let g:netrw_dirhist_4='/Users/pepa/Dropbox/2_RESEARCH/DPS/paper'
+let g:netrw_dirhist_5='/Users/pepa/Dropbox/2_RESEARCH/DPS/paper/tables_figures'
+let g:netrw_dirhist_6='/Users/pepa/Downloads/Address Book - 2013-01-04.abbu'
